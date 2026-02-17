@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white shadow sm:rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:px-6 bg-slate-50 border-b border-slate-200">
+            <h3 class="text-lg leading-6 font-medium text-slate-900">
+                New Dispute Analysis
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm text-slate-500">
+                Paste the dispute details below to detect fraud signals and assess risk.
+            </p>
+        </div>
+        <div class="p-6">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label for="amount" class="block text-sm font-medium text-slate-700">Transaction Amount ($)</label>
+                    <div class="mt-1">
+                        <input type="number" name="amount" id="amount" step="0.01" required
+                            class="shadow-sm focus:ring-fintech-500 focus:border-fintech-500 block w-full sm:text-sm border-slate-300 rounded-md p-2 border">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="category" class="block text-sm font-medium text-slate-700">Merchant Category</label>
+                    <div class="mt-1">
+                        <select id="category" name="category"
+                            class="shadow-sm focus:ring-fintech-500 focus:border-fintech-500 block w-full sm:text-sm border-slate-300 rounded-md p-2 border">
+                            <option>Retail</option>
+                            <option>Digital Goods</option>
+                            <option>Travel & Hospitality</option>
+                            <option>Service</option>
+                            <option>Food & Beverage</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700">Dispute Description /
+                        Customer Complaint</label>
+                    <div class="mt-1">
+                        <textarea id="description" name="description" rows="5" required
+                            class="shadow-sm focus:ring-fintech-500 focus:border-fintech-500 block w-full sm:text-sm border-slate-300 rounded-md p-2 border"
+                            placeholder="e.g., I never authorized this charge. I was at work when this happened..."></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-fintech-600 hover:bg-fintech-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fintech-500">
+                        Analyze Risk
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

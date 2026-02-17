@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto; text-align: center;">
+    <h1>Upload Data</h1>
+    <p>Upload a CSV file to get instant insights.</p>
+
+    <form method="post" enctype="multipart/form-data" style="margin-top: 2rem;">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".csv" required style="margin-bottom: 1rem;">
+        <br>
+        <button type="submit" class="btn">Analyze Data</button>
+    </form>
+</div>
+{% endblock %}

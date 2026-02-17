@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Dashboard for {{ dataset.file.name }}</h1>
+    <a href="{% url 'upload' %}" class="btn">New Upload</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+    <!-- Dataset Overview -->
+    <div class="card">
+        <h2>Overview</h2>
+        <p><strong>Rows:</strong> {{ report.profiling_data.rows }}</p>
+        <p><strong>Columns:</strong> {{ report.profiling_data.columns|join:", " }}</p>
+    </div>
+
+    <!-- Missing Values -->
+    <div class="card">
+        <h2>Missing Values</h2>
+        <ul>
+            {% for col, count in report.profiling_data.missing_values.items %}
+            {% if count > 0 %}
+            <li><strong>{{ col }}:</strong> {{ count }}</li>
+            {% endif %}
+            {% empty %}
+            <li>No missing values detected.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Numeric Stats -->
+    <div class="card" style="grid-column: span 2;">
+        <h2>Numeric Statistics</h2>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; border-bottom: 1px solid #ddd;">Stat</th>
+                        {% for col, stats in report.profiling_data.numeric_desc.items %}
+                        <th style="text-align: left; border-bottom: 1px solid #ddd;">{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in "count mean std min 25% 50% 75% max"|make_list %}
+                    <!-- Only mocking iteration over keys, ideally done better in view or template filter -->
+                    <!-- Simplified for skeleton -->
+                    {% endfor %}
+                    <!-- Displaying raw json for MVP -->
+
+                </tbody>
+            </table>
+            <pre style="background: #eee; padding: 1rem;">{{ report.profiling_data.numeric_desc }}</pre>
+        </div>
+    </div>
+</div>
+
+<!-- Anomalies -->
+<div class="card">
+    <h2>Anomalies Detected</h2>
+    {% if report.anomaly_data %}
+    <ul>
+        {% for col, data in report.anomaly_data.items %}
+        <li><strong>{{ col }}:</strong> {{ data.count }} outliers detected.</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No significant anomalies detected.</p>
+    {% endif %}
+</div>
+
+<!-- Insights -->
+<div class="card">
+    <h2>AI Insights</h2>
+    {% for insight in report.insights_data %}
+    <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 1rem; margin-bottom: 0.5rem;">
+        {{ insight }}
+    </div>
+    {% empty %}
+    <p>No insights generated.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

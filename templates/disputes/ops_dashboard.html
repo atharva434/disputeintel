@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-red-900">Risk Ops Dashboard</h1>
+        <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Ops Access Only</span>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                High Risk & Assigned Cases
+            </h3>
+        </div>
+        <ul role="list" class="divide-y divide-gray-200">
+            {% for case in cases %}
+            <li>
+                <a href="{% url 'dispute_result' case.id %}" class="block hover:bg-gray-50">
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <p class="text-sm font-medium text-indigo-600 truncate mr-3">
+                                    Case #{{ case.id }}
+                                </p>
+                                {% if case.analysis.risk_score == 'High' %}
+                                <span
+                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    HIGH RISK
+                                </span>
+                                {% endif %}
+                                {% if case.priority == 'CRITICAL' %}
+                                <span
+                                    class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    CRITICAL
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div class="ml-2 flex-shrink-0 flex">
+                                <p class="text-sm text-gray-500">
+                                    {{ case.analysis.classification }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-2 sm:flex sm:justify-between">
+                            <div class="sm:flex">
+                                <p class="flex items-center text-sm text-gray-500">
+                                    {{ case.customer.username }} - ${{ case.amount }}
+                                </p>
+                            </div>
+                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                                <p>
+                                    {{ case.created_at|timesince }} ago
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <li class="px-4 py-8 text-center text-gray-500">
+                No high priority cases assigned.
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

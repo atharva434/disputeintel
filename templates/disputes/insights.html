@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-bold text-slate-900">Operational Insights</h1>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <dt class="text-sm font-medium text-slate-500 truncate">Total Analysed Cases</dt>
+                <dd class="mt-1 text-3xl font-semibold text-slate-900">{{ total_cases }}</dd>
+            </div>
+        </div>
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <dt class="text-sm font-medium text-slate-500 truncate">High Risk Alerts</dt>
+                <dd class="mt-1 text-3xl font-semibold text-red-600">{{ high_risk_count }}</dd>
+            </div>
+        </div>
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <dt class="text-sm font-medium text-slate-500 truncate">Avg Resolution Time</dt>
+                <dd class="mt-1 text-3xl font-semibold text-slate-900">~2.4h</dd> <!-- Mock metric -->
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Top Classifications -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-slate-900 mb-4">Dispute Classifications</h3>
+            <div class="space-y-4">
+                {% for item in classifications %}
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-slate-600">{{ item.classification }}</span>
+                    <span
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                        {{ item.total }} cases
+                    </span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                    <div class="bg-fintech-500 h-2.5 rounded-full" style="width: 10%"></div> <!-- Simplified width -->
+                </div>
+                {% empty %}
+                <p class="text-slate-500 text-sm">No data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Top Merchants -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-slate-900 mb-4">Risk by Category</h3>
+            <div class="space-y-4">
+                {% for item in categories %}
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-slate-600">{{ item.merchant_category }}</span>
+                    <span class="font-medium text-slate-900">{{ item.total }}</span>
+                </div>
+                {% empty %}
+                <p class="text-slate-500 text-sm">No data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

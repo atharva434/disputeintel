@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6">
+        <a href="{% url 'customer_dashboard' %}" class="text-indigo-600 hover:text-indigo-900">&larr; Back to Dashboard</a>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Case Details -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Dispute Analysis Result
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    AI-powered risk assessment.
+                </p>
+            </div>
+            <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+                <dl class="sm:divide-y sm:divide-gray-200">
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Merchant Category</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ case.merchant_category }}</dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Amount</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${{ case.amount }}</dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Status</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ case.status }}</dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Risk Level</dt>
+                        <dd class="mt-1 text-sm font-bold sm:mt-0 sm:col-span-2 {% if case.analysis.risk_score == 'High' %}text-red-600{% elif case.analysis.risk_score == 'Medium' %}text-yellow-600{% else %}text-green-600{% endif %}">
+                            {{ case.analysis.risk_score }}
+                        </dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Classification</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ case.analysis.classification }}</dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Recommended Action</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-semibold">{{ case.analysis.recommended_action }}</dd>
+                    </div>
+                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Reasoning</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <ul class="list-disc pl-5 space-y-1">
+                                {% for step in case.analysis.reasoning_steps %}
+                                    <li>{{ step }}</li>
+                                {% endfor %}
+                            </ul>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="bg-white shadow sm:rounded-lg flex flex-col h-[600px]">
+            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Case Support Chat
+                </h3>
+            </div>
+            
+            <div class="flex-1 p-4 overflow-y-auto bg-gray-50" id="chat-messages">
+                {% for msg in chat_messages %}
+                <div class="flex flex-col mb-4 {% if msg.sender == request.user %}items-end{% else %}items-start{% endif %}">
+                    <div class="max-w-[80%] rounded-lg px-4 py-2 
+                        {% if msg.sender.is_staff %}bg-blue-100 text-blue-900 border border-blue-200
+                        {% elif msg.sender == request.user %}bg-indigo-600 text-white
+                        {% else %}bg-white border border-gray-200 text-gray-900{% endif %}">
+                        <p class="text-sm">{{ msg.message }}</p>
+                    </div>
+                    <span class="text-xs text-gray-500 mt-1">
+                        {% if msg.sender.is_staff %}Support Agent{% else %}{{ msg.sender.username }}{% endif %} • {{ msg.created_at|date:"H:i" }}
+                    </span>
+                </div>
+                {% empty %}
+                <p class="text-center text-gray-500 text-sm mt-10">No messages yet. Start the conversation.</p>
+                {% endfor %}
+            </div>
+
+            <div class="p-4 bg-white border-t border-gray-200">
+                <form method="post" class="flex gap-2">
+                    {% csrf_token %}
+                    <input type="text" name="message" required placeholder="Type your message..." 
+                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-scroll to bottom of chat
+    const chatContainer = document.getElementById('chat-messages');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+</script>
+{% endblock %}
